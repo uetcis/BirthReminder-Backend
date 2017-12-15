@@ -1,0 +1,9 @@
+[core]
+	repositoryformatversion = 0
+	filemode = true
+	bare = true
+	ignorecase = true
+[remote "origin"]
+	url = https://github.com/PerfectlySoft/Perfect-HTTPServer.git
+	fetch = +refs/*:refs/*
+	mirror = true

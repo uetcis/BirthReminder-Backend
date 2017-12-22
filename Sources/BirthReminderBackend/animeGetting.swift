@@ -25,8 +25,12 @@ let personRoute = Route(method: .get, uri: "/api/birthdayReminder/Config/*") { r
     response.completed()
 }
 
-let animeRoute = Route(method: .get, uri: "/api/birthdayReminder/animes") { request,response in
-    let result = getAnimes()
+let animeRoute = Route(method: .get, uri: "/api/birthdayReminder/animes/*") { request,response in
+    let requirements: String?
+    if request.pathComponents.count == 5 {
+        requirements = request.pathComponents[4]
+    } else { requirements = nil }
+    let result = getAnimes(searchText: requirements)
     do{
         response.setHeader(.contentType, value: "text/html; charset=utf-8")
         try response.setBody(json: result)
@@ -74,7 +78,7 @@ func getDetailedData(withAnimeID id:Int) -> Array<[String:Any]> {
     return finalResult
 }
 
-func getAnimes() -> [[String:Any]] {
+func getAnimes(searchText: String?) -> [[String:Any]] {
     var finalResult = [[String:Any]]()
     let mysql = MySQL()
     guard mysql.setOption(.MYSQL_SET_CHARSET_NAME, "utf8") else {
@@ -86,7 +90,13 @@ func getAnimes() -> [[String:Any]] {
     defer{
         mysql.close()
     }
-    guard mysql.query(statement: "SELECT id,name FROM Animes;") else {
+    let statement: String
+    if let searchingText = searchText, searchingText != "/" {
+        statement = "SELECT id,name FROM Animes WHERE name like \'%\(searchingText)%\';"
+    } else {
+        statement = "SELECT id,name FROM Animes;"
+    }
+    guard mysql.query(statement: statement) else {
         return []
     }
     let results = mysql.storeResults()!

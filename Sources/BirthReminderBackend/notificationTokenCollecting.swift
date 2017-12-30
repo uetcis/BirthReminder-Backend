@@ -39,8 +39,8 @@ let notificationCollectingRoute = Route(method: .post, uri: "/api/birthdayRemind
         response.completed(status: HTTPResponseStatus.internalServerError)
         return
     }
-    let results = mysql.storeResults()
-    results?.forEachRow() { _ in
+    if let results = mysql.storeResults(),
+        results.numRows() == 0 {
         response.completed(status: HTTPResponseStatus.ok)
         return
     }

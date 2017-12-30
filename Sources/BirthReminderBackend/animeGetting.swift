@@ -9,19 +9,13 @@ import Foundation
 import PerfectMySQL
 import PerfectHTTP
 
-let personRoute = Route(method: .get, uri: "/api/birthdayReminder/Config/*") { request,response in
-    let caoNiMa = "<html><head><title>Fuck you</title><meta charset=\"utf8\"></head><body><h1>总有刁民想害朕</h1></body></html>"
-    if let animeId = Int(request.pathComponents[4]) {
-        let result = getDetailedData(withAnimeID: animeId)
-        do{
-            response.setHeader(.contentType, value: "text/html; charset=utf-8")
-            try response.setBody(json: result)
-        }catch{
-            response.setBody(string: "\(error)")
-        }
-    } else {
-        response.setBody(string: caoNiMa)
+let personRoute = Route(method: .get, uri: "/api/birthdayReminder/characters/*") { request,response in
+    guard let animeId = Int(request.pathComponents[4]) else {
+        response.completed(status: HTTPResponseStatus.badRequest)
+        return
     }
+    let result = getDetailedData(with: animeId)
+    _ = try? response.setBody(json: result)
     response.completed()
 }
 
@@ -31,61 +25,76 @@ let animeRoute = Route(method: .get, uri: "/api/birthdayReminder/animes/*") { re
         requirements = request.pathComponents[4]
     } else { requirements = nil }
     let result = getAnimes(searchText: requirements)
-    do{
-        response.setHeader(.contentType, value: "text/html; charset=utf-8")
-        try response.setBody(json: result)
-    }catch{
-        response.setBody(string: "\(error)")
-    }
+    _ = try? response.setBody(json: result)
     response.completed()
 }
 
-func getDetailedData(withAnimeID id:Int) -> Array<[String:Any]> {
+let animePicRoute = Route(method: .get, uri: "/api/birthdayReminder/image/anime/*") { request, response in
+    guard let stringID = request.pathComponents.last,
+        let id = Int(stringID) else {
+            response.completed(status: HTTPResponseStatus.badRequest)
+            return
+    }
+    guard let result = getAnimePic(for: id) else {
+        response.completed(status: HTTPResponseStatus.notFound)
+        return
+    }
+    let json = ["pic":result.data,"copyright":result.copyright]
+    _ = try? response.setBody(json: json)
+    response.completed()
+}
+
+let personalPicRoute = Route(method: .get, uri: "/api/birthdayReminder/image/character/*") { request, response in
+    guard let stringID = request.pathComponents.last,
+        let id = Int(stringID) else {
+            response.completed(status: HTTPResponseStatus.badRequest)
+            return
+    }
+    guard let result = getPersonalPic(for: id) else {
+        response.completed(status: HTTPResponseStatus.notFound)
+        return
+    }
+    let json = ["pic":result.data,"copyright":result.copyright]
+    _ = try? response.setBody(json: json)
+    response.completed()
+}
+
+fileprivate func getDetailedData(with id:Int) -> [[String:Any]]? {
     let mysql = MySQL()
     guard mysql.setOption(.MYSQL_SET_CHARSET_NAME, "utf8") else {
-        return []
+        return nil
     }
     guard mysql.connect(host: host, user: user, password: password, db: database) else {
-        return []
+        return nil
     }
     defer{
         mysql.close()
     }
     guard mysql.query(statement: "SELECT id,name,birth FROM Characters WHERE anime = \(id);") else {
         print(mysql.errorMessage())
-        return []
+        return nil
     }
-    var results = mysql.storeResults()!
+    let results = mysql.storeResults()!
     var finalResult = [[String:Any]]()
-    results.forEachRow { result in
-        let id = result[0]!
-        let name = result[1]!
-        let birth = result[2]!
-        finalResult.append(["name":name,"birth":birth,"id": Int(id)!])
-    }
-    guard mysql.query(statement: "select startCharacter from Animes where id = \(id);") else {
-        return []
-    }
-    results = mysql.storeResults()!
-    results.forEachRow { result in
-        let startChracter = Int(result[0]!)!
-        for times in 0..<finalResult.count {
-            let id = finalResult[times]["id"] as! Int
-            let realId = id - startChracter + 1
-            finalResult[times]["id"]! = realId
+    results.forEachRow { row in
+        if let strID = row[0],
+            let id = Int(strID),
+            let name = row[1],
+            let birth = row[2] {
+            finalResult += [["name":name,"birth":birth,"id": id]]
         }
     }
     return finalResult
 }
 
-func getAnimes(searchText: String?) -> [[String:Any]] {
+fileprivate func getAnimes(searchText: String?) -> [[String:Any]]? {
     var finalResult = [[String:Any]]()
     let mysql = MySQL()
     guard mysql.setOption(.MYSQL_SET_CHARSET_NAME, "utf8") else {
-        return []
+        return nil
     }
     guard mysql.connect(host: host, user: user, password: password, db: database) else {
-        return []
+        return nil
     }
     defer{
         mysql.close()
@@ -97,13 +106,66 @@ func getAnimes(searchText: String?) -> [[String:Any]] {
         statement = "SELECT id,name FROM Animes;"
     }
     guard mysql.query(statement: statement) else {
-        return []
+        return nil
     }
-    let results = mysql.storeResults()!
-    results.forEachRow { result in
-        let id = result[0]!
-        let name = result[1]!
-        finalResult.append(["id": Int(id)!,"name":name])
+    guard let results = mysql.storeResults() else { return [] }
+    results.forEachRow { row in
+        if let strID = row[0],
+            let id = Int(strID),
+            let name = row[1] {
+            finalResult += [["id": id,"name":name]]
+        }
     }
     return finalResult
+}
+
+typealias Base64 = String
+typealias PicPack = (data: Base64, copyright: String)
+
+fileprivate func getAnimePic(for id: Int) -> PicPack? {
+    let mysql = MySQL()
+    guard mysql.setOption(.MYSQL_SET_CHARSET_NAME, "utf8") else {
+        return nil
+    }
+    guard mysql.connect(host: host, user: user, password: password, db: database) else {
+        return nil
+    }
+    defer {
+        mysql.close()
+    }
+    
+    guard mysql.query(statement: "SELECT pic,picCopyright FROM Animes WHERE id = \(id);") else { return nil }
+    guard let results = mysql.storeResults() else { return nil }
+    guard let row = results.next() else { return nil }
+    
+    if let base64 = row[0],
+        let copyright = row[1] {
+        return (base64,copyright)
+    } else {
+        return nil
+    }
+}
+
+fileprivate func getPersonalPic(for id: Int) -> PicPack? {
+    let mysql = MySQL()
+    guard mysql.setOption(.MYSQL_SET_CHARSET_NAME, "utf8") else {
+        return nil
+    }
+    guard mysql.connect(host: host, user: user, password: password, db: database) else {
+        return nil
+    }
+    defer {
+        mysql.close()
+    }
+    
+    guard mysql.query(statement: "SELECT pic,picCopyright FROM Characters WHERE id = \(id);") else { return nil }
+    guard let results = mysql.storeResults() else { return nil }
+    guard let row = results.next() else { return nil }
+    
+    if let base64 = row[0],
+        let copyright = row[1] {
+        return (base64,copyright)
+    } else {
+        return nil
+    }
 }

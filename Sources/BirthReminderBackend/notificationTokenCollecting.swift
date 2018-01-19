@@ -34,17 +34,16 @@ let notificationCollectingRoute = Route(method: .post, uri: "/api/birthdayRemind
     defer {
         mysql.close()
     }
-    guard mysql.query(statement: "SELECT token FROM RemoteTokens WHERE token = '\(token)';") else {
-        print(mysql.errorMessage())
-        response.completed(status: HTTPResponseStatus.internalServerError)
-        return
-    }
-    if let results = mysql.storeResults(),
-        results.numRows() == 0 {
-        response.completed(status: HTTPResponseStatus.ok)
-        return
-    }
-    guard mysql.query(statement: "INSERT INTO RemoteTokens (token) values ('\(token)');") else {
+    let statement = """
+    INSERT INTO `RemoteTokens` (`token`)
+    SELECT t.* FROM(
+    SELECT "\(token)"
+    ) t
+    WHERE NOT EXISTS (
+    SELECT * FROM `RemoteTokens` RT WHERE RT.token = "\(token)"
+    );
+    """
+    guard mysql.query(statement: statement) else {
         print(mysql.errorMessage())
         response.completed(status: HTTPResponseStatus.internalServerError)
         return

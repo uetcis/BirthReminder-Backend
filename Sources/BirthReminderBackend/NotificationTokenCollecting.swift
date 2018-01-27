@@ -9,7 +9,7 @@ import Foundation
 import PerfectHTTP
 import PerfectMySQL
 
-let notificationCollectingRoute = Route(method: .post, uri: "/api/birthdayReminder/notification") { request,response in
+let notificationCollectingRoute = Route(method: .post, uri: "/api/BirthReminder/notification") { request,response in
     guard let body = request.postBodyBytes,
         let string = String(bytes: body, encoding: .utf8),
         let json = try? string.jsonDecode() else {

@@ -10,7 +10,7 @@ import PerfectHTTP
 import PerfectMySQL
 import PerfectSlackAPIClient
 
-let contributionRoute = Route(method: .post, uri: "/api/birthReminder/contribution") { request,response in
+let contributionRoute = Route(method: .post, uri: "/api/BirthReminder/contribution") { request,response in
     guard let body = request.postBodyBytes,
         let string = String(bytes: body, encoding: .utf8),
         let _json = try? string.jsonDecode() as? [String:Any],

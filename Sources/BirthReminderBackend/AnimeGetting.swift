@@ -9,7 +9,7 @@ import Foundation
 import PerfectMySQL
 import PerfectHTTP
 
-let personRoute = Route(method: .get, uri: "/api/birthdayReminder/characters/*") { request,response in
+let personRoute = Route(method: .get, uri: "/api/BirthReminder/characters/*") { request,response in
     guard let animeId = Int(request.pathComponents[4]) else {
         response.completed(status: HTTPResponseStatus.badRequest)
         return
@@ -19,7 +19,7 @@ let personRoute = Route(method: .get, uri: "/api/birthdayReminder/characters/*")
     response.completed()
 }
 
-let animeRoute = Route(method: .get, uri: "/api/birthdayReminder/animes/*") { request,response in
+let animeRoute = Route(method: .get, uri: "/api/BirthReminder/animes/*") { request,response in
     let requirements: String?
     if request.pathComponents.count == 5 {
         requirements = request.pathComponents[4]
@@ -29,7 +29,7 @@ let animeRoute = Route(method: .get, uri: "/api/birthdayReminder/animes/*") { re
     response.completed()
 }
 
-let animePicRoute = Route(method: .get, uri: "/api/birthdayReminder/image/anime/*") { request, response in
+let animePicRoute = Route(method: .get, uri: "/api/BirthReminder/image/anime/*") { request, response in
     guard let stringID = request.pathComponents.last,
         let id = Int(stringID) else {
             response.completed(status: HTTPResponseStatus.badRequest)
@@ -44,7 +44,7 @@ let animePicRoute = Route(method: .get, uri: "/api/birthdayReminder/image/anime/
     response.completed()
 }
 
-let personalPicRoute = Route(method: .get, uri: "/api/birthdayReminder/image/character/*") { request, response in
+let personalPicRoute = Route(method: .get, uri: "/api/BirthReminder/image/character/*") { request, response in
     guard let stringID = request.pathComponents.last,
         let id = Int(stringID) else {
             response.completed(status: HTTPResponseStatus.badRequest)

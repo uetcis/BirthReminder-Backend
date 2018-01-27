@@ -20,27 +20,27 @@ let contributionRoute = Route(method: .post, uri: "/api/BirthReminder/contributi
     }
     
     guard let anime = json["anime"] as? [String:Any],
-        let characters = json["people"] as? [[String:Any]] else{
+        let characters = json["people"] as? [[String:Any]],
+        let contributorInfo = json["contributorInfo"] as? String else{
             response.completed(status: HTTPResponseStatus.badRequest)
             return
     }
     
-    guard let animeId = insert(anime: anime),
+    guard let animeId = insert(anime: anime, by: contributorInfo),
         insert(characters: characters, anime: animeId) else {
             response.completed(status: HTTPResponseStatus.internalServerError)
             return
     }
     
     let message = SlackMessage()
-    let contributorInfo = json["contributorInfo"] as? String
-    message.text = "New contribution at row \(animeId) from \(contributorInfo ?? "Undefined")".toMarkdown(format: .italic)
+    message.text = "New contribution at row \(animeId) from \(contributorInfo)".toMarkdown(format: .italic)
     Thread.detachNewThread {
         message.send()
     }
     response.completed(status: HTTPResponseStatus.ok)
 }
 
-fileprivate func insert(anime: [String:Any]) -> Int? {
+fileprivate func insert(anime: [String:Any], by contributorInfo: String) -> Int? {
     let mysql = MySQL()
     guard mysql.setOption(.MYSQL_SET_CHARSET_NAME, "utf8") else {
         return nil
@@ -58,7 +58,7 @@ fileprivate func insert(anime: [String:Any]) -> Int? {
             return nil
     }
     let statement = """
-    INSERT INTO `Animes` (`name`,`pic`,`picCopyright`) VALUES ('\(name)','\(pic)','\(picCopyright)');
+    INSERT INTO `Animes` (`name`,`pic`,`picCopyright`,`contributionInfo`) VALUES ('\(name)','\(pic)','\(picCopyright)','\(contributorInfo)');
     """
     guard mysql.query(statement: statement) else {
         return nil

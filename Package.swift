@@ -16,7 +16,8 @@ if let cache = getenv("URL_PERFECT") {
 	urls = repos.map { "https://github.com/PerfectlySoft/\($0).git" }
 }
 
+
 let package = Package(
 	name: "BirthReminderBackend", targets: [],
-	dependencies: urls.map { .Package(url: $0, majorVersion: 3)} 
+	dependencies: urls.map { .Package(url: $0, majorVersion: 3)} + [.Package(url: "https://github.com/SvenTiigi/PerfectSlackAPIClient.git", majorVersion: 1)]
 )

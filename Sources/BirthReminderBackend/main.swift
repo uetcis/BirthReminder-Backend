@@ -8,18 +8,19 @@
 import PerfectLib
 import PerfectHTTP
 import PerfectHTTPServer
-import PerfectMySQL
-import Foundation
-import PerfectNotifications
+import PerfectSlackAPIClient
 
 let sslServer = HTTPServer()
+sslServer.serverPort = 8800
+
 sslServer.documentRoot = "/webroot"
 
 // HTTPS Configuration
 sslServer.serverPort = 443 //Port defination
 sslServer.caCert = "/certificates/www.tcwq.tech.ca-bundle"
 sslServer.ssl = (sslCert: "/certificates/www.tcwq.tech.crt", sslKey: "/certificates/www.tcwq.tech.key")
-// Database Configuration
+
+// Private info Configuration
 let host: String
 let user: String
 let password: String
@@ -34,6 +35,7 @@ do {
     user = json["user"]!
     password = json["password"]!
     database = json["database"]!
+    SlackAPIClient.webhookURL = json["slack"]!
     defer {
         file.close()
     }
@@ -42,14 +44,13 @@ do {
 }
 
 //API
-var routes = Routes()
-
-routes.add([
+var routes = Routes([
     animeRoute,
     animePicRoute,
     personRoute,
     personalPicRoute,
-    notificationCollectingRoute
+    notificationCollectingRoute,
+    contributionRoute
     ])
 
 sslServer.addRoutes(routes)

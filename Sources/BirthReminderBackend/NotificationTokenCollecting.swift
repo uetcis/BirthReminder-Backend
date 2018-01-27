@@ -10,9 +10,11 @@ import PerfectHTTP
 import PerfectMySQL
 
 let notificationCollectingRoute = Route(method: .post, uri: "/api/birthdayReminder/notification") { request,response in
-    guard let json = try? request.postParams.first?.0.jsonDecode() else {
-        response.completed(status: HTTPResponseStatus.badRequest)
-        return
+    guard let body = request.postBodyBytes,
+        let string = String(bytes: body, encoding: .utf8),
+        let json = try? string.jsonDecode() else {
+            response.completed(status: HTTPResponseStatus.badRequest)
+            return
     }
     guard let token = (json as? [String:String])?["token"] else {
         return

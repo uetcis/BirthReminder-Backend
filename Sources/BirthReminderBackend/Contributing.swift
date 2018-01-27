@@ -34,10 +34,9 @@ let contributionRoute = Route(method: .post, uri: "/api/birthReminder/contributi
     let message = SlackMessage()
     let contributorInfo = json["contributorInfo"] as? String
     message.text = "New contribution at row \(animeId) from \(contributorInfo ?? "Undefined")".toMarkdown(format: .italic)
-    DispatchQueue.global(qos: .userInitiated).async {
+    Thread.detachNewThread {
         message.send()
     }
-    
     response.completed(status: HTTPResponseStatus.ok)
 }
 

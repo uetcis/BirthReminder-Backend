@@ -103,7 +103,7 @@ fileprivate func getAnimes(searchText: String?) -> [[String:Any]]? {
     if let searchingText = searchText, searchingText != "/" {
         statement = "SELECT `id`,`name` FROM `Animes` WHERE `name` like \'%\(searchingText)%\'  && `isReleased` = TRUE;"
     } else {
-        statement = "SELECT `id`,`name` FROM `Animes`;"
+        statement = "SELECT `id`,`name` FROM `Animes` WHERE `isReleased` = TRUE;"
     }
     guard mysql.query(statement: statement) else {
         return nil

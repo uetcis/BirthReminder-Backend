@@ -28,7 +28,7 @@ let sslCertPath: String?
 let sslKeyPath: String?
 
 do {
-    let file = File("/.BirthReminder.json")
+    let file = File("./BirthReminder.json")
     try file.open()
     let config = try file.readString()
     let json = try config.jsonDecode() as! [String:String]
@@ -37,7 +37,7 @@ do {
     password = json["password"]!
     database = json["database"]!
     SlackAPIClient.webhookURL = json["slack"]!
-    logFilePath = json["logPath"] ?? "/BirthReminderBackend.log"
+    logFilePath = json["logPath"] ?? "./BirthReminderBackend.log"
     port = UInt16(json["port"]!)!
     caCertPath = json["caCertPath"]
     sslCertPath = json["sslCertPath"]

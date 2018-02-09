@@ -10,8 +10,10 @@ import PerfectMySQL
 import PerfectHTTP
 
 let personRoute = Route(method: .get, uri: "/api/BirthReminder/characters/*") { request,response in
+    let eventID = logNew(request: request)
     guard let animeId = Int(request.pathComponents[4]) else {
         response.completed(status: HTTPResponseStatus.badRequest)
+        logInvalid(request: request, eventID: eventID, description: "Cannot get anime id")
         return
     }
     let result = getDetailedData(with: animeId)
@@ -20,6 +22,7 @@ let personRoute = Route(method: .get, uri: "/api/BirthReminder/characters/*") { 
 }
 
 let animeRoute = Route(method: .get, uri: "/api/BirthReminder/animes/*") { request,response in
+    let eventID = logNew(request: request)
     let requirements: String?
     if request.pathComponents.count == 5 {
         requirements = request.pathComponents[4]
@@ -30,13 +33,16 @@ let animeRoute = Route(method: .get, uri: "/api/BirthReminder/animes/*") { reque
 }
 
 let animePicRoute = Route(method: .get, uri: "/api/BirthReminder/image/anime/*") { request, response in
+    let eventID = logNew(request: request)
     guard let stringID = request.pathComponents.last,
         let id = Int(stringID) else {
             response.completed(status: HTTPResponseStatus.badRequest)
+            logInvalid(request: request, eventID: eventID, description: "Cannot get anime id")
             return
     }
     guard let result = getAnimePic(for: id) else {
         response.completed(status: HTTPResponseStatus.notFound)
+        logInvalid(request: request, eventID: eventID, description: "Anime pic for id: \(id) not found")
         return
     }
     let json = ["pic":result.data,"copyright":result.copyright]
@@ -45,13 +51,16 @@ let animePicRoute = Route(method: .get, uri: "/api/BirthReminder/image/anime/*")
 }
 
 let personalPicRoute = Route(method: .get, uri: "/api/BirthReminder/image/character/*") { request, response in
+    let eventID = logNew(request: request)
     guard let stringID = request.pathComponents.last,
         let id = Int(stringID) else {
             response.completed(status: HTTPResponseStatus.badRequest)
+            logInvalid(request: request, eventID: eventID, description: "Cannot get character id")
             return
     }
     guard let result = getPersonalPic(for: id) else {
         response.completed(status: HTTPResponseStatus.notFound)
+        logInvalid(request: request, eventID: eventID, description: "Character pic for id: \(id) not found")
         return
     }
     let json = ["pic":result.data,"copyright":result.copyright]

@@ -6,7 +6,7 @@ import PackageDescription
 #endif
 
 let repos: [String] 
-	= ["Perfect-HTTPServer", "Perfect-Notifications", "Perfect-MySQL"]
+	= ["Perfect-HTTPServer", "Perfect-Notifications", "Perfect-MySQL","Perfect-Logger"]
 let urls: [String]
 
 if let cache = getenv("URL_PERFECT") {

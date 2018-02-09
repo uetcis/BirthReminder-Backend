@@ -11,29 +11,35 @@ import PerfectMySQL
 import PerfectSlackAPIClient
 
 let contributionRoute = Route(method: .post, uri: "/api/BirthReminder/contribution") { request,response in
+    let eventID = logNew(request: request)
     guard let body = request.postBodyBytes,
         let string = String(bytes: body, encoding: .utf8),
         let _json = try? string.jsonDecode() as? [String:Any],
         let json = _json else {
             response.completed(status: HTTPResponseStatus.badRequest)
+            logInvalid(request: request, eventID: eventID, description: "Cannot read request body")
             return
     }
     
     guard let anime = json["anime"] as? [String:Any],
         let characters = json["people"] as? [[String:Any]],
-        let contributorInfo = json["contributorInfo"] as? String else{
+        !characters.isEmpty,
+        let contributorInfo = json["contributorInfo"] as? String,
+        let deviceToken = json["token"] as? String? else{
             response.completed(status: HTTPResponseStatus.badRequest)
+            logInvalid(request: request, eventID: eventID, description: "Cannot decode json")
             return
     }
     
     guard let animeId = insert(anime: anime, by: contributorInfo),
         insert(characters: characters, anime: animeId) else {
             response.completed(status: HTTPResponseStatus.internalServerError)
+            logInternalError(with: request, eventID: eventID, description: "Failed to insert")
             return
     }
     
     let message = SlackMessage()
-    message.text = "New contribution at row \(animeId) from \(contributorInfo)".toMarkdown(format: .italic)
+    message.text = "New contribution at row \(animeId) from \(contributorInfo), with device token \(deviceToken ?? "not provided")".toMarkdown(format: .italic)
     Thread.detachNewThread {
         message.send()
     }
@@ -64,7 +70,6 @@ fileprivate func insert(anime: [String:Any], by contributorInfo: String) -> Int?
         return nil
     }
     guard mysql.query(statement: "SELECT last_insert_id();") else {
-        print("\(statement)\n\(mysql.errorMessage())")
         return nil
     }
     guard let id = mysql.storeResults()?.next()?[0] else { return nil }

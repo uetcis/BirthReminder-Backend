@@ -5,36 +5,35 @@
 //  Created by Captain雪ノ下八幡 on 08/12/2017.
 //
 
-import Foundation
 import PerfectHTTP
 import PerfectMySQL
+import PerfectLogger
+import PerfectLib
 
 let notificationCollectingRoute = Route(method: .post, uri: "/api/BirthReminder/notification") { request,response in
+    let eventId = logNew(request: request)
     guard let body = request.postBodyBytes,
         let string = String(bytes: body, encoding: .utf8),
         let json = try? string.jsonDecode() else {
             response.completed(status: HTTPResponseStatus.badRequest)
+            logInvalid(request: request, eventID: eventId, description: "Cannot read request body")
             return
     }
     guard let token = (json as? [String:String])?["token"] else {
-        return
-    }
-    guard !(token.contains(string: ")") || token.contains(string: ";")) else {
         response.completed(status: HTTPResponseStatus.badRequest)
+        logInvalid(request: request, eventID: eventId, description: "Not containing a device token")
         return
     }
     let mysql = MySQL()
     guard mysql.setOption(.MYSQL_SET_CHARSET_NAME, "utf8") else {
-        print("Failed to set the charset")
         response.completed(status: HTTPResponseStatus.internalServerError)
+        logInternalError(with: request, eventID: eventId, description: "Failed to set the charest")
         return
     }
     guard mysql.connect(host: host, user: user, password: password, db: database) else {
         response.completed(status: HTTPResponseStatus.internalServerError)
+        logInternalError(with: request, eventID: eventId, description: "Failed to connect to the database")
         return
-    }
-    defer {
-        mysql.close()
     }
     let statement = """
     INSERT INTO `RemoteTokens` (`token`)
@@ -46,8 +45,8 @@ let notificationCollectingRoute = Route(method: .post, uri: "/api/BirthReminder/
     );
     """
     guard mysql.query(statement: statement) else {
-        print(mysql.errorMessage())
         response.completed(status: HTTPResponseStatus.internalServerError)
+        logInternalError(with: request, eventID: eventId, description: mysql.errorMessage())
         return
     }
     response.completed(status: HTTPResponseStatus.ok)

@@ -9,22 +9,23 @@ import PerfectLib
 import PerfectHTTP
 import PerfectHTTPServer
 import PerfectSlackAPIClient
+import PerfectLogger
 
-let sslServer = HTTPServer()
-sslServer.serverPort = 8800
-
-sslServer.documentRoot = "/webroot"
-
-// HTTPS Configuration
-sslServer.serverPort = 443 //Port defination
-sslServer.caCert = "/certificates/www.tcwq.tech.ca-bundle"
-sslServer.ssl = (sslCert: "/certificates/www.tcwq.tech.crt", sslKey: "/certificates/www.tcwq.tech.key")
+let server = HTTPServer()
 
 // Private info Configuration
 let host: String
 let user: String
 let password: String
 let database: String
+
+let logFilePath: String
+
+let port: UInt16
+let documentRoot: String?
+let caCertPath: String?
+let sslCertPath: String?
+let sslKeyPath: String?
 
 do {
     let file = File("/.BirthReminder.json")
@@ -36,11 +37,29 @@ do {
     password = json["password"]!
     database = json["database"]!
     SlackAPIClient.webhookURL = json["slack"]!
+    logFilePath = json["logPath"] ?? "/BirthReminderBackend.log"
+    port = UInt16(json["port"]!)!
+    caCertPath = json["caCertPath"]
+    sslCertPath = json["sslCertPath"]
+    sslKeyPath = json["sslKeyPath"]
+    documentRoot = json["documentRoot"]
     defer {
         file.close()
     }
 } catch {
     fatalError(error.localizedDescription)
+}
+
+// HTTPS Configuration
+server.serverPort = port
+if let documentRoot = documentRoot {
+    server.documentRoot = documentRoot
+}
+if let caCertPath = caCertPath,
+    let sslCertPath = sslCertPath,
+    let sslKeyPath = sslKeyPath {
+    server.caCert = caCertPath
+    server.ssl = (sslCert: sslCertPath, sslKey: sslKeyPath)
 }
 
 //API
@@ -53,10 +72,10 @@ var routes = Routes([
     contributionRoute
     ])
 
-sslServer.addRoutes(routes)
+server.addRoutes(routes)
 do{
-    try sslServer.start()
+    try server.start()
 }catch{
-    print(error)
+    LogFile.terminal(error.localizedDescription, eventid: UUID().string, logFile: logFilePath)
 }
 

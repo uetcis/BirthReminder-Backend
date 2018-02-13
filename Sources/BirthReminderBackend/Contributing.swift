@@ -37,11 +37,8 @@ let contributionRoute = Route(method: .post, uri: "/api/BirthReminder/contributi
             logInternalError(with: request, eventID: eventID, description: "Failed to insert")
             return
     }
-    
-    let message = SlackMessage()
-    message.text = "New contribution at row \(animeId) from \(contributorInfo), with device token \(deviceToken ?? "not provided")".toMarkdown(format: .italic)
     Thread.detachNewThread {
-        message.send()
+        sendContributionNotice(for: animeId)
     }
     response.completed(status: HTTPResponseStatus.ok)
 }

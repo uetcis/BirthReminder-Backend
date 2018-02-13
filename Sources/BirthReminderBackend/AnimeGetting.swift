@@ -68,6 +68,40 @@ let personalPicRoute = Route(method: .get, uri: "/api/BirthReminder/image/charac
     response.completed()
 }
 
+let personalPurePicRoute = Route(method: .get, uri: "/api/BirthReminder/pureImage/character/*") { request, response in
+    let eventID = logNew(request: request)
+    guard let stringID = request.pathComponents.last,
+        let id = Int(stringID) else {
+            response.completed(status: HTTPResponseStatus.badRequest)
+            logInvalid(request: request, eventID: eventID, description: "Cannot get character id")
+            return
+    }
+    guard let result = getPersonalPic(for: id) else {
+        response.completed(status: HTTPResponseStatus.notFound)
+        logInvalid(request: request, eventID: eventID, description: "Character pic for id: \(id) not found")
+        return
+    }
+    response.setBody(bytes: result.data.binaryConverted ?? [])
+    response.completed()
+}
+
+let animePurePicRoute = Route(method: .get, uri: "/api/BirthReminder/pureImage/anime/*") { request, response in
+    let eventID = logNew(request: request)
+    guard let stringID = request.pathComponents.last,
+        let id = Int(stringID) else {
+            response.completed(status: HTTPResponseStatus.badRequest)
+            logInvalid(request: request, eventID: eventID, description: "Cannot get anime id")
+            return
+    }
+    guard let result = getAnimePic(for: id) else {
+        response.completed(status: HTTPResponseStatus.notFound)
+        logInvalid(request: request, eventID: eventID, description: "Anime pic for id: \(id) not found")
+        return
+    }
+    response.setBody(bytes: result.data.binaryConverted ?? [])
+    response.completed()
+}
+
 fileprivate func getDetailedData(with id:Int) -> [[String:Any]]? {
     let mysql = MySQL()
     guard mysql.setOption(.MYSQL_SET_CHARSET_NAME, "utf8") else {
@@ -176,5 +210,12 @@ fileprivate func getPersonalPic(for id: Int) -> PicPack? {
         return (base64,copyright)
     } else {
         return nil
+    }
+}
+
+extension Base64 {
+    var binaryConverted: [UInt8]? {
+        guard let data = Data(base64Encoded: self) else { return nil }
+        return [UInt8](data)
     }
 }

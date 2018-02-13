@@ -13,19 +13,33 @@ import PerfectLogger
 
 let server = HTTPServer()
 
+
+
 // Private info Configuration
+// MySQL Database
 let host: String
 let user: String
 let password: String
 let database: String
 
+// Log file
 let logFilePath: String
 
+// SSL Cert
 let port: UInt16
 let documentRoot: String?
 let caCertPath: String?
 let sslCertPath: String?
 let sslKeyPath: String?
+
+/// Running host, e.g. https://www.tcwq.tech/
+let localhost: String
+
+// APNS Pushing
+let notificationsAppId: String
+let apnsKeyIdentifier: String
+let apnsTeamIdentifier: String
+let apnsPrivateKey: String
 
 do {
     let file = File("/.BirthReminder.json")
@@ -43,11 +57,17 @@ do {
     sslCertPath = json["sslCertPath"]
     sslKeyPath = json["sslKeyPath"]
     documentRoot = json["documentRoot"]
+    localhost = json["localhost"]!
+    notificationsAppId = json["notificationsAppId"]!
+    apnsKeyIdentifier = json["apnsKeyIdentifier"]!
+    apnsTeamIdentifier = json["apnsTeamIdentifier"]!
+    apnsPrivateKey = json["apnsPrivateKey"]!
     defer {
         file.close()
     }
 } catch {
-    fatalError(error.localizedDescription)
+    Log.logger = ConsoleLogger()
+    Log.terminal(message: "Cannot read configuration: \(error.localizedDescription)")
 }
 
 // HTTPS Configuration
@@ -69,7 +89,8 @@ var routes = Routes([
     personRoute,
     personalPicRoute,
     notificationCollectingRoute,
-    contributionRoute
+    contributionRoute,
+    contributionSlack
     ])
 
 server.addRoutes(routes)

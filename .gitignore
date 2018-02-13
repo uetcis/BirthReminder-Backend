@@ -7,3 +7,5 @@
 /*.resolved
 /*.pins
 /*.orig
+birthreminderbackend.service
+PADockerfile_build

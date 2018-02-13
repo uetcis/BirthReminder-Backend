@@ -24,6 +24,18 @@ public func logInternalError(with request: HTTPRequest, eventID: String, descrip
     LogFile.error("Internal error at \(request.path), with description: \(description ?? "No")", eventid: eventID, logFile: logFilePath)
 }
 
+public func log(error: Error, description: String? = nil) {
+    LogFile.error(error.localizedDescription, logFile: logFilePath)
+}
+
+public func log(errorDescription: String) {
+    LogFile.error(errorDescription, logFile: logFilePath)
+}
+
+public func log(info: String) {
+    LogFile.info(info, logFile: logFilePath)
+}
+
 fileprivate extension Array where Element == UInt8 {
     var string: String? {
         let data = Data(bytes: self)

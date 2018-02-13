@@ -18,6 +18,7 @@ let personRoute = Route(method: .get, uri: "/api/BirthReminder/characters/*") { 
     }
     let result = getDetailedData(with: animeId)
     _ = try? response.setBody(json: result)
+    response.setHeader(.contentEncoding, value: "utf8")
     response.completed()
 }
 
@@ -29,6 +30,7 @@ let animeRoute = Route(method: .get, uri: "/api/BirthReminder/animes/*") { reque
     } else { requirements = nil }
     let result = getAnimes(searchText: requirements)
     _ = try? response.setBody(json: result)
+    response.setHeader(.contentEncoding, value: "utf8")
     response.completed()
 }
 
@@ -47,6 +49,7 @@ let animePicRoute = Route(method: .get, uri: "/api/BirthReminder/image/anime/*")
     }
     let json = ["pic":result.data,"copyright":result.copyright]
     _ = try? response.setBody(json: json)
+    response.setHeader(.contentEncoding, value: "utf8")
     response.completed()
 }
 
@@ -65,6 +68,7 @@ let personalPicRoute = Route(method: .get, uri: "/api/BirthReminder/image/charac
     }
     let json = ["pic":result.data,"copyright":result.copyright]
     _ = try? response.setBody(json: json)
+    response.setHeader(.contentEncoding, value: "utf8")
     response.completed()
 }
 

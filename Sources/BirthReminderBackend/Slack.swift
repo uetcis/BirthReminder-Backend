@@ -10,7 +10,8 @@ import PerfectMySQL
 import PerfectHTTP
 import PerfectNotifications
 
-let contributionSlack = Route(method: .post, uri: "/api/BirthReminder/contributionSlack") { request,response in
+let contributionSlack = Route(method: .post, uri: "/api/BirthReminder/contributionSlack/*") { request,response in
+    log(info: request.param(name: "payload") ?? "no payload")
     guard let payload = request.param(name: "payload"),
         let jsonConvertible = try? payload.jsonDecode(),
         let json = jsonConvertible as? [String:Any],
@@ -44,6 +45,9 @@ let contributionSlack = Route(method: .post, uri: "/api/BirthReminder/contributi
 @discardableResult
 public func sendContributionNotice(for id: Int) -> Bool {
     let mysql = MySQL()
+    guard mysql.setOption(.MYSQL_SET_CHARSET_NAME, "utf8") else {
+        return false
+    }
     guard mysql.connect(host: host, user: user, password: password, db: database) else { return false }
     defer {
         mysql.close()
@@ -107,7 +111,7 @@ fileprivate struct Anime {
 
 fileprivate func sendSlackMessage(anime: Anime, characters: [Character]) {
     let message = SlackMessage()
-    message.text = "New contributio named: \(anime.name)".toMarkdown(format: .pre)
+    message.text = "New contributio named: \(anime.name)".toMarkdown(format: .bold)
     
     let basicInfoAttachment = SlackAttachment()
     basicInfoAttachment.title = "Basics"

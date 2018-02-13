@@ -13,8 +13,6 @@ import PerfectLogger
 
 let server = HTTPServer()
 
-
-
 // Private info Configuration
 // MySQL Database
 let host: String
@@ -32,7 +30,7 @@ let caCertPath: String?
 let sslCertPath: String?
 let sslKeyPath: String?
 
-/// Running host, e.g. https://www.tcwq.tech/
+/// Running host, e.g. https://www.tcwq.tech
 let localhost: String
 
 // APNS Pushing
@@ -88,6 +86,8 @@ var routes = Routes([
     animePicRoute,
     personRoute,
     personalPicRoute,
+    animePurePicRoute,
+    personalPurePicRoute,
     notificationCollectingRoute,
     contributionRoute,
     contributionSlack

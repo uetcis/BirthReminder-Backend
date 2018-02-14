@@ -10,32 +10,36 @@ import PerfectMySQL
 import PerfectHTTP
 import PerfectNotifications
 
-let contributionSlack = Route(method: .post, uri: "/api/BirthReminder/contributionSlack/*") { request,response in
+let contributionSlack = Route(method: .post, uri: "/api/BirthReminder/slack/actions/contribution") { request,response in
     log(info: request.param(name: "payload") ?? "no payload")
     guard let payload = request.param(name: "payload"),
         let jsonConvertible = try? payload.jsonDecode(),
         let json = jsonConvertible as? [String:Any],
         let actions = json["actions"] as? [[String:Any]],
         let firstActionName = actions.first?["name"] as? String,
-        let user = json["user"] as? [String:Any],
-        let username = user["name"] as? String,
+        let operatingUser = json["user"] as? [String:Any],
+        let username = operatingUser["name"] as? String,
         let callbackID = json["callback_id"] as? String,
         let animeID = Int(callbackID) else {
             response.completed(status: .badRequest)
             return
     }
-    let message = SlackMessage()
+    var message: SlackMessage? = nil
+    guard let animeAndCharacters = getAnimeAndCharacters(for: animeID) else {
+        response.completed(status: .internalServerError)
+        return
+    }
     switch firstActionName {
     case "accept":
         releaseAnime(at: animeID)
-        message.text = "Accepted by \(username), with id: \(animeID)"
+        message = messageForContribution(anime: animeAndCharacters.anime, characters: animeAndCharacters.characters, type: .accepted, operatingUser: username)
     case "decline":
         declineAnime(at: animeID)
-        message.text = "Declined by \(username), with id: \(animeID)"
+        message = messageForContribution(anime: animeAndCharacters.anime, characters: animeAndCharacters.characters, type: .declined, operatingUser: username)
     default:
         break
     }
-    let responseBody = message.toJSON()
+    let responseBody = message?.toJSON() ?? [:]
     let _ = try? response.setBody(json: responseBody)
     response.completed(status: .ok)
 }
@@ -44,43 +48,8 @@ let contributionSlack = Route(method: .post, uri: "/api/BirthReminder/contributi
 
 @discardableResult
 public func sendContributionNotice(for id: Int) -> Bool {
-    let mysql = MySQL()
-    guard mysql.setOption(.MYSQL_SET_CHARSET_NAME, "utf8") else {
-        return false
-    }
-    guard mysql.connect(host: host, user: user, password: password, db: database) else { return false }
-    defer {
-        mysql.close()
-    }
-    guard mysql.query(statement: "SELECT `name`,`picCopyright`,`contributionInfo` FROM `Animes` WHERE `id` = \(id);") else {
-        return false
-    }
-    guard let _animes = mysql.storeResults() else { return false }
-    var animes: [Anime] = []
-    _animes.forEachRow { row in
-        if let name = row[0],
-            let picCopyright = row[1],
-            let contributionInfo = row[2] {
-            animes += [Anime(id: id, name: name, copyright: picCopyright, contributionInfo: contributionInfo)]
-        }
-    }
-    guard let anime = animes.first else { return false }
-    
-    guard mysql.query(statement: "SELECT `id`,`name`,`birth`,`picCopyright` FROM `Characters` WHERE `anime` = \(id);") else {
-        return false
-    }
-    guard let _characters = mysql.storeResults() else { return false }
-    var characters: [Character] = []
-    _characters.forEachRow { row in
-        if let stringID = row[0],
-            let id = Int(stringID),
-            let name = row[1],
-            let birth = row[2],
-            let picCopyright = row[3] {
-            characters += [Character(id: id, name: name, birth: birth, copyright: picCopyright)]
-        }
-    }
-    sendSlackMessage(anime: anime, characters: characters)
+    guard let animeAndCharacters = getAnimeAndCharacters(for: id) else { return false }
+    sendSlackMessage(anime: animeAndCharacters.anime, characters: animeAndCharacters.characters)
     return true
 }
 
@@ -109,7 +78,53 @@ fileprivate struct Anime {
     }
 }
 
-fileprivate func sendSlackMessage(anime: Anime, characters: [Character]) {
+fileprivate func getAnimeAndCharacters(`for` id: Int) -> (anime: Anime,characters: [Character])? {
+    let mysql = MySQL()
+    guard mysql.setOption(.MYSQL_SET_CHARSET_NAME, "utf8") else {
+        return nil
+    }
+    guard mysql.connect(host: host, user: user, password: password, db: database) else { return nil }
+    defer {
+        mysql.close()
+    }
+    guard mysql.query(statement: "SELECT `name`,`picCopyright`,`contributionInfo` FROM `Animes` WHERE `id` = \(id);") else {
+        return nil
+    }
+    guard let _animes = mysql.storeResults() else { return nil }
+    var animes: [Anime] = []
+    _animes.forEachRow { row in
+        if let name = row[0],
+            let picCopyright = row[1],
+            let contributionInfo = row[2] {
+            animes += [Anime(id: id, name: name, copyright: picCopyright, contributionInfo: contributionInfo)]
+        }
+    }
+    guard let anime = animes.first else { return nil }
+    
+    guard mysql.query(statement: "SELECT `id`,`name`,`birth`,`picCopyright` FROM `Characters` WHERE `anime` = \(id);") else {
+        return nil
+    }
+    guard let _characters = mysql.storeResults() else { return nil }
+    var characters: [Character] = []
+    _characters.forEachRow { row in
+        if let stringID = row[0],
+            let id = Int(stringID),
+            let name = row[1],
+            let birth = row[2],
+            let picCopyright = row[3] {
+            characters += [Character(id: id, name: name, birth: birth, copyright: picCopyright)]
+        }
+    }
+    return (anime,characters)
+}
+
+fileprivate enum ContributionMessageType {
+    case new
+    case accepted
+    case declined
+}
+
+fileprivate func messageForContribution(anime: Anime, characters: [Character], type: ContributionMessageType, operatingUser: String? = nil) -> SlackMessage {
     let message = SlackMessage()
     message.text = "New contributio named: \(anime.name)".toMarkdown(format: .bold)
     
@@ -153,18 +168,34 @@ fileprivate func sendSlackMessage(anime: Anime, characters: [Character]) {
     let actionAttachment = SlackAttachment()
     actionAttachment.title = "不要听风就是雨，你自己也要有个判断"
     actionAttachment.callbackId = "\(anime.id)"
-    actionAttachment.color = SlackAttachment.Color.warning
-    
-    let agreeAction = SlackAttachment.Action(name: "accept", text: "Accept", type: .button)
-    agreeAction.style = .primary
-    
-    let declineAction = SlackAttachment.Action(name: "decline", text: "Decline", type: .button)
-    declineAction.style = .danger
-    
-    actionAttachment.actions = [agreeAction,declineAction]
-    
+    switch type {
+    case .accepted:
+        actionAttachment.color = SlackAttachment.Color.good
+        actionAttachment.text = "Accepted by user: \(operatingUser ?? "Unknown")"
+        message.replaceOriginal = true
+        message.responseType = SlackMessage.ResponseType.inChannel
+    case .declined:
+        actionAttachment.color = SlackAttachment.Color.danger
+        actionAttachment.text = "Declined by user: \(operatingUser ?? "Unknown")"
+        message.replaceOriginal = true
+        message.responseType = SlackMessage.ResponseType.inChannel
+    case .new:
+        let agreeAction = SlackAttachment.Action(name: "accept", text: "Accept", type: .button)
+        agreeAction.style = .primary
+        
+        let declineAction = SlackAttachment.Action(name: "decline", text: "Decline", type: .button)
+        declineAction.style = .danger
+        
+        actionAttachment.actions = [agreeAction,declineAction]
+    }
+
     message.attachments = [basicInfoAttachment,animeImageAttachment,characterSeparatingAttachment] + characterAttachments + [actionAttachment]
     
+    return message
+}
+
+fileprivate func sendSlackMessage(anime: Anime, characters: [Character]) {
+    let message = messageForContribution(anime: anime, characters: characters, type: .new)
     message.send()
 }
 

@@ -76,12 +76,12 @@ let personalPurePicRoute = Route(method: .get, uri: "/api/BirthReminder/pureImag
     let eventID = logNew(request: request)
     guard let stringID = request.pathComponents.last,
         let id = Int(stringID) else {
-            response.completed(status: HTTPResponseStatus.badRequest)
+            response.completed(status: .badRequest)
             logInvalid(request: request, eventID: eventID, description: "Cannot get character id")
             return
     }
     guard let result = getPersonalPic(for: id) else {
-        response.completed(status: HTTPResponseStatus.notFound)
+        response.completed(status: .notFound)
         logInvalid(request: request, eventID: eventID, description: "Character pic for id: \(id) not found")
         return
     }
@@ -93,16 +93,21 @@ let animePurePicRoute = Route(method: .get, uri: "/api/BirthReminder/pureImage/a
     let eventID = logNew(request: request)
     guard let stringID = request.pathComponents.last,
         let id = Int(stringID) else {
-            response.completed(status: HTTPResponseStatus.badRequest)
+            response.completed(status: .badRequest)
             logInvalid(request: request, eventID: eventID, description: "Cannot get anime id")
             return
     }
     guard let result = getAnimePic(for: id) else {
-        response.completed(status: HTTPResponseStatus.notFound)
+        response.completed(status: .notFound)
         logInvalid(request: request, eventID: eventID, description: "Anime pic for id: \(id) not found")
         return
     }
-    response.setBody(bytes: result.data.binaryConverted ?? [])
+    guard let binary = result.data.binaryConverted else {
+        response.completed(status: .internalServerError)
+        logInternalError(with: request, eventID: eventID)
+        return
+    }
+    response.setBody(bytes: binary)
     response.completed()
 }
 
@@ -219,7 +224,7 @@ fileprivate func getPersonalPic(for id: Int) -> PicPack? {
 
 extension Base64 {
     var binaryConverted: [UInt8]? {
-        guard let data = Data(base64Encoded: self) else { return nil }
+        guard let data = Data(base64Encoded: self, options: .ignoreUnknownCharacters) else { return nil }
         return [UInt8](data)
     }
 }

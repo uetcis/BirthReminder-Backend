@@ -10,7 +10,7 @@ import PerfectMySQL
 import PerfectHTTP
 import PerfectNotifications
 
-let contributionSlack = Route(method: .post, uri: "/api/BirthReminder/slack/actions/contribution") { request,response in
+let contributionSlackRoute = Route(method: .post, uri: "/api/BirthReminder/slack/actions/contribution") { request,response in
     log(info: request.param(name: "payload") ?? "no payload")
     guard let payload = request.param(name: "payload"),
         let jsonConvertible = try? payload.jsonDecode(),

@@ -90,7 +90,7 @@ var routes = Routes([
     personalPurePicRoute,
     notificationCollectingRoute,
     contributionRoute,
-    contributionSlack
+    contributionSlackRoute
     ])
 
 server.addRoutes(routes)

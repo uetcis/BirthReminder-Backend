@@ -123,7 +123,6 @@ fileprivate func getDetailedData(with id:Int) -> [[String:Any]]? {
         mysql.close()
     }
     guard mysql.query(statement: "SELECT id,name,birth FROM Characters WHERE anime = \(id);") else {
-        print(mysql.errorMessage())
         return nil
     }
     let results = mysql.storeResults()!

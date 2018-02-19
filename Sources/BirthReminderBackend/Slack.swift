@@ -126,7 +126,7 @@ fileprivate enum ContributionMessageType {
 
 fileprivate func messageForContribution(anime: Anime, characters: [Character], type: ContributionMessageType, operatingUser: String? = nil) -> SlackMessage {
     let message = SlackMessage()
-    message.text = "New contributio named: \(anime.name)".toMarkdown(format: .bold)
+    message.text = "New contribution named: \(anime.name)".toMarkdown(format: .bold)
     
     let basicInfoAttachment = SlackAttachment()
     basicInfoAttachment.title = "Basics"

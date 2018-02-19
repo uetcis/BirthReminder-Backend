@@ -16,6 +16,12 @@ public func logNew(request: HTTPRequest) -> String {
     return eventID
 }
 
+public func logNewContribution() -> String {
+    let eventID = UUID().string
+    LogFile.info("New contribution", eventid: eventID, logFile: logFilePath)
+    return eventID
+}
+
 public func logInvalid(request: HTTPRequest, eventID: String, description: String? = nil) {
     LogFile.info("Invalid request at \(request.path), with description: \(description ?? "No")", eventid: eventID, logFile: logFilePath)
 }

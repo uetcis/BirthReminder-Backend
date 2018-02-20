@@ -1,2 +1,9 @@
 language: swift
 osx_image: xcode9.1
+xcode_project: BirthReminderBackend.xcodeproj
+xcode_scheme: BirthReminderBackend
+before_install:
+    - /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+    - brew install mysql
+script:
+    sudo swift build -c release

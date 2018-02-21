@@ -8,9 +8,10 @@
 import Foundation
 import PerfectMySQL
 import PerfectHTTP
+import PerfectLib
 
 let personRoute = Route(method: .get, uri: "/api/BirthReminder/characters/*") { request,response in
-    let eventID = logNew(request: request)
+    let eventID = UUID().string
     guard let animeId = Int(request.pathComponents[4]) else {
         response.completed(status: HTTPResponseStatus.badRequest)
         logInvalid(request: request, eventID: eventID, description: "Cannot get anime id")
@@ -23,7 +24,7 @@ let personRoute = Route(method: .get, uri: "/api/BirthReminder/characters/*") { 
 }
 
 let animeRoute = Route(method: .get, uri: "/api/BirthReminder/animes/*") { request,response in
-    let eventID = logNew(request: request)
+    let eventID = UUID().string
     let requirements: String?
     if request.pathComponents.count == 5 {
         requirements = request.pathComponents[4]
@@ -35,7 +36,7 @@ let animeRoute = Route(method: .get, uri: "/api/BirthReminder/animes/*") { reque
 }
 
 let animePicRoute = Route(method: .get, uri: "/api/BirthReminder/image/anime/*") { request, response in
-    let eventID = logNew(request: request)
+    let eventID = UUID().string
     guard let stringID = request.pathComponents.last,
         let id = Int(stringID) else {
             response.completed(status: HTTPResponseStatus.badRequest)
@@ -54,7 +55,7 @@ let animePicRoute = Route(method: .get, uri: "/api/BirthReminder/image/anime/*")
 }
 
 let personalPicRoute = Route(method: .get, uri: "/api/BirthReminder/image/character/*") { request, response in
-    let eventID = logNew(request: request)
+    let eventID = UUID().string
     guard let stringID = request.pathComponents.last,
         let id = Int(stringID) else {
             response.completed(status: HTTPResponseStatus.badRequest)
@@ -73,7 +74,7 @@ let personalPicRoute = Route(method: .get, uri: "/api/BirthReminder/image/charac
 }
 
 let personalPurePicRoute = Route(method: .get, uri: "/api/BirthReminder/pureImage/character/*") { request, response in
-    let eventID = logNew(request: request)
+    let eventID = UUID().string
     guard let stringID = request.pathComponents.last,
         let id = Int(stringID) else {
             response.completed(status: .badRequest)
@@ -90,7 +91,7 @@ let personalPurePicRoute = Route(method: .get, uri: "/api/BirthReminder/pureImag
 }
 
 let animePurePicRoute = Route(method: .get, uri: "/api/BirthReminder/pureImage/anime/*") { request, response in
-    let eventID = logNew(request: request)
+    let eventID = UUID().string
     guard let stringID = request.pathComponents.last,
         let id = Int(stringID) else {
             response.completed(status: .badRequest)

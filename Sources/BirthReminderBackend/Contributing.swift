@@ -9,9 +9,11 @@ import Foundation
 import PerfectHTTP
 import PerfectMySQL
 import PerfectSlackAPIClient
+import PerfectLib
+import PerfectThread
 
 let contributionRoute = Route(method: .post, uri: "/api/BirthReminder/contribution") { request,response in
-    let eventID = logNewContribution()
+    let eventID = UUID().string
     guard let body = request.postBodyBytes,
         let string = String(bytes: body, encoding: .utf8),
         let _json = try? string.jsonDecode() as? [String:Any],
@@ -37,7 +39,7 @@ let contributionRoute = Route(method: .post, uri: "/api/BirthReminder/contributi
             logInternalError(with: request, eventID: eventID, description: "Failed to insert")
             return
     }
-    Thread.detachNewThread {
+    Threading.dispatch {
         sendContributionNotice(for: animeId)
     }
     response.completed(status: HTTPResponseStatus.ok)

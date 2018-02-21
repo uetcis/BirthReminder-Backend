@@ -10,6 +10,7 @@ import PerfectHTTP
 import PerfectHTTPServer
 import PerfectSlackAPIClient
 import PerfectLogger
+import PerfectRequestLogger
 
 let server = HTTPServer()
 
@@ -94,9 +95,15 @@ var routes = Routes([
     ])
 
 server.addRoutes(routes)
+
+// RequestLogging
+RequestLogFile.location = logFilePath
+let httplogger = RequestLogger()
+server.setRequestFilters([(httplogger, .high)])
+server.setResponseFilters([(httplogger, .low)])
+
 do{
     try server.start()
 }catch{
     LogFile.terminal(error.localizedDescription, eventid: UUID().string, logFile: logFilePath)
 }
-

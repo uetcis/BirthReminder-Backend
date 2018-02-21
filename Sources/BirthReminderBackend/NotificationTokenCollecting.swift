@@ -11,7 +11,7 @@ import PerfectLogger
 import PerfectLib
 
 let notificationCollectingRoute = Route(method: .post, uri: "/api/BirthReminder/notification") { request,response in
-    let eventId = logNew(request: request)
+    let eventId = UUID().string
     guard let body = request.postBodyBytes,
         let string = String(bytes: body, encoding: .utf8),
         let json = try? string.jsonDecode() else {

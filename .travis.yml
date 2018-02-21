@@ -7,3 +7,5 @@ before_install:
     - brew install mysql
 script:
     sudo swift build -c release
+notifications:
+    slack: birthreminder:Nzv0j52r06OKMH5kAMZo0hJo

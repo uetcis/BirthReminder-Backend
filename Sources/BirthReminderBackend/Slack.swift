@@ -127,42 +127,49 @@ fileprivate enum ContributionMessageType {
 fileprivate func messageForContribution(anime: Anime, characters: [Character], type: ContributionMessageType, operatingUser: String? = nil) -> SlackMessage {
     let message = SlackMessage()
     message.text = "New contribution named: \(anime.name)".toMarkdown(format: .bold)
+    message.attachments = []
     
-    let basicInfoAttachment = SlackAttachment()
-    basicInfoAttachment.title = "Basics"
-    
-    let nameField = SlackAttachment.Field()
-    nameField.title = "Name"
-    nameField.value = anime.name
-    nameField.short = true
-    
-    let rowField = SlackAttachment.Field()
-    rowField.title = "Row"
-    rowField.value = "\(anime.id)"
-    rowField.short = true
-    
-    let contributorField = SlackAttachment.Field()
-    contributorField.title = "Contributor"
-    contributorField.value = anime.contributionInfo
-    contributorField.short = false
-    
-    basicInfoAttachment.fields = [nameField,rowField,contributorField]
-    
-    let animeImageAttachment = SlackAttachment()
-    animeImageAttachment.title = "Set Image"
-    animeImageAttachment.thumbnailURL = anime.imagePath
-    animeImageAttachment.text = "Copyright Info: \(anime.copyright)"
-    
-    let characterSeparatingAttachment = SlackAttachment()
-    characterSeparatingAttachment.title = "Characters"
-    
-    
-    let characterAttachments: [SlackAttachment] = characters.map { character in
-        let characterAttachment = SlackAttachment()
-        characterAttachment.title = character.name
-        characterAttachment.text = "Birth: \(character.birth)\nCopyright Info: \(character.copyright)"
-        characterAttachment.thumbnailURL = character.imagePath
-        return characterAttachment
+    if type != .declined {
+     
+        let basicInfoAttachment = SlackAttachment()
+        basicInfoAttachment.title = "Basics"
+        
+        let nameField = SlackAttachment.Field()
+        nameField.title = "Name"
+        nameField.value = anime.name
+        nameField.short = true
+        
+        let rowField = SlackAttachment.Field()
+        rowField.title = "Row"
+        rowField.value = "\(anime.id)"
+        rowField.short = true
+        
+        let contributorField = SlackAttachment.Field()
+        contributorField.title = "Contributor"
+        contributorField.value = anime.contributionInfo
+        contributorField.short = false
+        
+        basicInfoAttachment.fields = [nameField,rowField,contributorField]
+        
+        let animeImageAttachment = SlackAttachment()
+        animeImageAttachment.title = "Set Image"
+        animeImageAttachment.thumbnailURL = anime.imagePath
+        animeImageAttachment.text = "Copyright Info: \(anime.copyright)"
+        
+        let characterSeparatingAttachment = SlackAttachment()
+        characterSeparatingAttachment.title = "Characters"
+        
+        
+        let characterAttachments: [SlackAttachment] = characters.map { character in
+            let characterAttachment = SlackAttachment()
+            characterAttachment.title = character.name
+            characterAttachment.text = "Birth: \(character.birth)\nCopyright Info: \(character.copyright)"
+            characterAttachment.thumbnailURL = character.imagePath
+            return characterAttachment
+        }
+        
+        message.attachments = [basicInfoAttachment,animeImageAttachment,characterSeparatingAttachment] + characterAttachments
+        
     }
     
     let actionAttachment = SlackAttachment()
@@ -170,15 +177,15 @@ fileprivate func messageForContribution(anime: Anime, characters: [Character], t
     actionAttachment.callbackId = "\(anime.id)"
     switch type {
     case .accepted:
-        actionAttachment.color = SlackAttachment.Color.good
+        actionAttachment.color = .good
         actionAttachment.text = "Accepted by user: \(operatingUser ?? "Unknown")"
         message.replaceOriginal = true
-        message.responseType = SlackMessage.ResponseType.inChannel
+        message.responseType = .inChannel
     case .declined:
-        actionAttachment.color = SlackAttachment.Color.danger
+        actionAttachment.color = .danger
         actionAttachment.text = "Declined by user: \(operatingUser ?? "Unknown")"
         message.replaceOriginal = true
-        message.responseType = SlackMessage.ResponseType.inChannel
+        message.responseType = .inChannel
     case .new:
         let agreeAction = SlackAttachment.Action(name: "accept", text: "Accept", type: .button)
         agreeAction.style = .primary
@@ -189,7 +196,7 @@ fileprivate func messageForContribution(anime: Anime, characters: [Character], t
         actionAttachment.actions = [agreeAction,declineAction]
     }
 
-    message.attachments = [basicInfoAttachment,animeImageAttachment,characterSeparatingAttachment] + characterAttachments + [actionAttachment]
+    message.attachments! += [actionAttachment]
     
     return message
 }
@@ -229,6 +236,7 @@ public func declineAnime(at id: Int) -> Bool {
             tokens += [token]
         }
     }
+    guard mysql.query(statement: "DELETE FROM `Animes` WHERE `id` = \(id);") else { return false }
     let notificationItems: [APNSNotificationItem] = [.alertTitle("Your contribution is declined"),.alertBody("Please check the contributing guide and submit again.\nFor more, contact us at CaptainYukinoshitaHachiman@tcwq.tech")]
     notify(users: tokens, with: notificationItems)
     return true

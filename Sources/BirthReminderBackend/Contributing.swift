@@ -33,7 +33,7 @@ let contributionRoute = Route(method: .post, uri: "/api/BirthReminder/contributi
             return
     }
     
-    guard let animeId = insert(anime: anime, by: contributorInfo),
+    guard let animeId = insert(anime: anime, by: contributorInfo, token: deviceToken),
         insert(characters: characters, anime: animeId) else {
             response.completed(status: HTTPResponseStatus.internalServerError)
             logInternalError(with: request, eventID: eventID, description: "Failed to insert")
@@ -45,7 +45,7 @@ let contributionRoute = Route(method: .post, uri: "/api/BirthReminder/contributi
     response.completed(status: HTTPResponseStatus.ok)
 }
 
-fileprivate func insert(anime: [String:Any], by contributorInfo: String) -> Int? {
+fileprivate func insert(anime: [String:Any], by contributorInfo: String, token: String?) -> Int? {
     let mysql = MySQL()
     guard mysql.setOption(.MYSQL_SET_CHARSET_NAME, "utf8") else {
         return nil
@@ -62,8 +62,9 @@ fileprivate func insert(anime: [String:Any], by contributorInfo: String) -> Int?
         let picCopyright = picPack["copyright"] as? String else {
             return nil
     }
+    let tokenInSQL = token == nil ? "NULL" : "'\(token!)'"
     let statement = """
-    INSERT INTO `Animes` (`name`,`pic`,`picCopyright`,`contributionInfo`) VALUES ('\(name)','\(pic)','\(picCopyright)','\(contributorInfo)');
+    INSERT INTO `Animes` (`name`,`pic`,`picCopyright`,`contributionInfo`,`contributorToken`) VALUES ('\(name)','\(pic)','\(picCopyright)','\(contributorInfo)',\(tokenInSQL);
     """
     guard mysql.query(statement: statement) else {
         return nil

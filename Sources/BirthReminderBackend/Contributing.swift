@@ -61,7 +61,7 @@ fileprivate func insert(anime: [String:Any], by contributorInfo: String, token: 
     }
     let tokenInSQL = token == nil ? "NULL" : "'\(token!)'"
     let statement = """
-    INSERT INTO `Animes` (`name`,`pic`,`picCopyright`,`contributionInfo`,`contributorToken`) VALUES ('\(name)','\(pic)','\(picCopyright)','\(contributorInfo)',\(tokenInSQL);
+    INSERT INTO `Animes` (`name`,`pic`,`picCopyright`,`contributionInfo`,`contributorToken`) VALUES ('\(name)','\(pic)','\(picCopyright)','\(contributorInfo)',\(tokenInSQL));
     """
     guard mysql.query(statement: statement) else {
         return nil

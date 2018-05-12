@@ -25,11 +25,6 @@ let notificationCollectingRoute = Route(method: .post, uri: "/api/BirthReminder/
         return
     }
     let mysql = MySQL()
-    guard mysql.setOption(.MYSQL_SET_CHARSET_NAME, "utf8") else {
-        response.completed(status: HTTPResponseStatus.internalServerError)
-        logInternalError(with: request, eventID: eventId, description: "Failed to set the charest")
-        return
-    }
     guard mysql.connect(host: host, user: user, password: password, db: database) else {
         response.completed(status: HTTPResponseStatus.internalServerError)
         logInternalError(with: request, eventID: eventId, description: "Failed to connect to the database")

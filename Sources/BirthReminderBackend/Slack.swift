@@ -80,9 +80,6 @@ fileprivate struct Anime {
 
 fileprivate func getAnimeAndCharacters(`for` id: Int) -> (anime: Anime,characters: [Character])? {
     let mysql = MySQL()
-    guard mysql.setOption(.MYSQL_SET_CHARSET_NAME, "utf8") else {
-        return nil
-    }
     guard mysql.connect(host: host, user: user, password: password, db: database) else { return nil }
     defer {
         mysql.close()

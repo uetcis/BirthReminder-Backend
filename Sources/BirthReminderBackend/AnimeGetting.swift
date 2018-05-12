@@ -114,9 +114,6 @@ let animePurePicRoute = Route(method: .get, uri: "/api/BirthReminder/pureImage/a
 
 fileprivate func getDetailedData(with id:Int) -> [[String:Any]]? {
     let mysql = MySQL()
-    guard mysql.setOption(.MYSQL_SET_CHARSET_NAME, "utf8") else {
-        return nil
-    }
     guard mysql.connect(host: host, user: user, password: password, db: database) else {
         return nil
     }
@@ -142,9 +139,6 @@ fileprivate func getDetailedData(with id:Int) -> [[String:Any]]? {
 fileprivate func getAnimes(searchText: String?) -> [[String:Any]]? {
     var finalResult = [[String:Any]]()
     let mysql = MySQL()
-    guard mysql.setOption(.MYSQL_SET_CHARSET_NAME, "utf8") else {
-        return nil
-    }
     guard mysql.connect(host: host, user: user, password: password, db: database) else {
         return nil
     }
@@ -176,9 +170,6 @@ typealias PicPack = (data: Base64, copyright: String)
 
 fileprivate func getAnimePic(for id: Int) -> PicPack? {
     let mysql = MySQL()
-    guard mysql.setOption(.MYSQL_SET_CHARSET_NAME, "utf8") else {
-        return nil
-    }
     guard mysql.connect(host: host, user: user, password: password, db: database) else {
         return nil
     }
@@ -200,9 +191,6 @@ fileprivate func getAnimePic(for id: Int) -> PicPack? {
 
 fileprivate func getPersonalPic(for id: Int) -> PicPack? {
     let mysql = MySQL()
-    guard mysql.setOption(.MYSQL_SET_CHARSET_NAME, "utf8") else {
-        return nil
-    }
     guard mysql.connect(host: host, user: user, password: password, db: database) else {
         return nil
     }

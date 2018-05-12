@@ -14,107 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "BirthReminderBackend::BirthReminderBackend"
-               BuildableName = "BirthReminderBackend"
-               BlueprintName = "BirthReminderBackend"
-               ReferencedContainer = "container:BirthReminderBackend.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "PerfectRequestLogger::PerfectRequestLogger"
-               BuildableName = "PerfectRequestLogger.framework"
-               BlueprintName = "PerfectRequestLogger"
-               ReferencedContainer = "container:BirthReminderBackend.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "PerfectSlackAPIClient::PerfectSlackAPIClient"
-               BuildableName = "PerfectSlackAPIClient.framework"
-               BlueprintName = "PerfectSlackAPIClient"
-               ReferencedContainer = "container:BirthReminderBackend.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "PerfectAPIClient::PerfectAPIClient"
-               BuildableName = "PerfectAPIClient.framework"
-               BlueprintName = "PerfectAPIClient"
-               ReferencedContainer = "container:BirthReminderBackend.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "ObjectMapper::ObjectMapper"
-               BuildableName = "ObjectMapper.framework"
-               BlueprintName = "ObjectMapper"
-               ReferencedContainer = "container:BirthReminderBackend.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "PerfectMySQL::PerfectMySQL"
-               BuildableName = "PerfectMySQL.framework"
-               BlueprintName = "PerfectMySQL"
-               ReferencedContainer = "container:BirthReminderBackend.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
                BlueprintIdentifier = "PerfectLogger::PerfectLogger"
                BuildableName = "PerfectLogger.framework"
                BlueprintName = "PerfectLogger"
-               ReferencedContainer = "container:BirthReminderBackend.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "PerfectCURL::PerfectCURL"
-               BuildableName = "PerfectCURL.framework"
-               BlueprintName = "PerfectCURL"
                ReferencedContainer = "container:BirthReminderBackend.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -140,6 +42,34 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
+               BlueprintIdentifier = "PerfectMySQL::PerfectMySQL"
+               BuildableName = "PerfectMySQL.framework"
+               BlueprintName = "PerfectMySQL"
+               ReferencedContainer = "container:BirthReminderBackend.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "BirthReminderBackend::BirthReminderBackend"
+               BuildableName = "BirthReminderBackend"
+               BlueprintName = "BirthReminderBackend"
+               ReferencedContainer = "container:BirthReminderBackend.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
                BlueprintIdentifier = "PerfectHTTPServer::PerfectHTTPServer"
                BuildableName = "PerfectHTTPServer.framework"
                BlueprintName = "PerfectHTTPServer"
@@ -154,9 +84,93 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
+               BlueprintIdentifier = "PerfectNet::PerfectNet"
+               BuildableName = "PerfectNet.framework"
+               BlueprintName = "PerfectNet"
+               ReferencedContainer = "container:BirthReminderBackend.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "COpenSSL::COpenSSL"
+               BuildableName = "COpenSSL.framework"
+               BlueprintName = "COpenSSL"
+               ReferencedContainer = "container:BirthReminderBackend.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
                BlueprintIdentifier = "PerfectCZlib::PerfectCZlib"
                BuildableName = "PerfectCZlib.framework"
                BlueprintName = "PerfectCZlib"
+               ReferencedContainer = "container:BirthReminderBackend.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "PerfectLib::PerfectLib"
+               BuildableName = "PerfectLib.framework"
+               BlueprintName = "PerfectLib"
+               ReferencedContainer = "container:BirthReminderBackend.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "PerfectSlackAPIClient::PerfectSlackAPIClient"
+               BuildableName = "PerfectSlackAPIClient.framework"
+               BlueprintName = "PerfectSlackAPIClient"
+               ReferencedContainer = "container:BirthReminderBackend.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "PerfectThread::PerfectThread"
+               BuildableName = "PerfectThread.framework"
+               BlueprintName = "PerfectThread"
+               ReferencedContainer = "container:BirthReminderBackend.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "PerfectRequestLogger::PerfectRequestLogger"
+               BuildableName = "PerfectRequestLogger.framework"
+               BlueprintName = "PerfectRequestLogger"
                ReferencedContainer = "container:BirthReminderBackend.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -196,20 +210,6 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "PerfectNet::PerfectNet"
-               BuildableName = "PerfectNet.framework"
-               BlueprintName = "PerfectNet"
-               ReferencedContainer = "container:BirthReminderBackend.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
                BlueprintIdentifier = "PerfectCrypto::PerfectCrypto"
                BuildableName = "PerfectCrypto.framework"
                BlueprintName = "PerfectCrypto"
@@ -224,9 +224,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "COpenSSL::COpenSSL"
-               BuildableName = "COpenSSL.framework"
-               BlueprintName = "COpenSSL"
+               BlueprintIdentifier = "PerfectCURL::PerfectCURL"
+               BuildableName = "PerfectCURL.framework"
+               BlueprintName = "PerfectCURL"
                ReferencedContainer = "container:BirthReminderBackend.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -238,9 +238,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "PerfectLib::PerfectLib"
-               BuildableName = "PerfectLib.framework"
-               BlueprintName = "PerfectLib"
+               BlueprintIdentifier = "PerfectAPIClient::PerfectAPIClient"
+               BuildableName = "PerfectAPIClient.framework"
+               BlueprintName = "PerfectAPIClient"
                ReferencedContainer = "container:BirthReminderBackend.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -252,9 +252,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "PerfectThread::PerfectThread"
-               BuildableName = "PerfectThread.framework"
-               BlueprintName = "PerfectThread"
+               BlueprintIdentifier = "ObjectMapper::ObjectMapper"
+               BuildableName = "ObjectMapper.framework"
+               BlueprintName = "ObjectMapper"
                ReferencedContainer = "container:BirthReminderBackend.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -283,9 +283,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "BirthReminderBackend::BirthReminderBackend"
-            BuildableName = "BirthReminderBackend"
-            BlueprintName = "BirthReminderBackend"
+            BlueprintIdentifier = "PerfectLogger::PerfectLogger"
+            BuildableName = "PerfectLogger.framework"
+            BlueprintName = "PerfectLogger"
             ReferencedContainer = "container:BirthReminderBackend.xcodeproj">
          </BuildableReference>
       </MacroExpansion>

@@ -47,9 +47,6 @@ let contributionRoute = Route(method: .post, uri: "/api/BirthReminder/contributi
 
 fileprivate func insert(anime: [String:Any], by contributorInfo: String, token: String?) -> Int? {
     let mysql = MySQL()
-    guard mysql.setOption(.MYSQL_SET_CHARSET_NAME, "utf8") else {
-        return nil
-    }
     guard mysql.connect(host: host, user: user, password: password, db: database) else {
         return nil
     }
@@ -78,9 +75,6 @@ fileprivate func insert(anime: [String:Any], by contributorInfo: String, token: 
 
 fileprivate func insert(characters charactersDictionary: [[String:Any]], anime: Int) -> Bool {
     let mysql = MySQL()
-    guard mysql.setOption(.MYSQL_SET_CHARSET_NAME, "utf8") else {
-        return false
-    }
     guard mysql.connect(host: host, user: user, password: password, db: database) else {
         return false
     }

@@ -80,6 +80,9 @@ fileprivate struct Anime {
 
 fileprivate func getAnimeAndCharacters(`for` id: Int) -> (anime: Anime,characters: [Character])? {
     let mysql = MySQL()
+    guard mysql.setOption(.MYSQL_SET_CHARSET_NAME, "utf8mb4") else {
+        return nil
+    }
     guard mysql.connect(host: host, user: user, password: password, db: database) else { return nil }
     defer {
         mysql.close()
@@ -206,6 +209,9 @@ fileprivate func sendSlackMessage(anime: Anime, characters: [Character]) {
 @discardableResult
 public func releaseAnime(at id: Int) -> Bool {
     let mysql = MySQL()
+    guard mysql.setOption(.MYSQL_SET_CHARSET_NAME, "utf8mb4") else {
+        return false
+    }
     guard mysql.connect(host: host, user: user, password: password, db: database) else { return false }
     guard mysql.query(statement: "UPDATE `Animes` SET `isReleased` = TRUE WHERE `id` = \(id);") else { return false }
     guard mysql.query(statement: "SELECT `token` FROM `Animes` WHERE `id` = \(id);"),
@@ -224,6 +230,9 @@ public func releaseAnime(at id: Int) -> Bool {
 @discardableResult
 public func declineAnime(at id: Int) -> Bool {
     let mysql = MySQL()
+    guard mysql.setOption(.MYSQL_SET_CHARSET_NAME, "utf8mb4") else {
+        return false
+    }
     guard mysql.connect(host: host, user: user, password: password, db: database) else { return false }
     guard mysql.query(statement: "SELECT `token` FROM `Animes` WHERE `id` = \(id);"),
         let result = mysql.storeResults() else { return false }

@@ -114,6 +114,9 @@ let animePurePicRoute = Route(method: .get, uri: "/api/BirthReminder/pureImage/a
 
 fileprivate func getDetailedData(with id:Int) -> [[String:Any]]? {
     let mysql = MySQL()
+    guard mysql.setOption(.MYSQL_SET_CHARSET_NAME, "utf8mb4") else {
+        return nil
+    }
     guard mysql.connect(host: host, user: user, password: password, db: database) else {
         return nil
     }
@@ -139,6 +142,9 @@ fileprivate func getDetailedData(with id:Int) -> [[String:Any]]? {
 fileprivate func getAnimes(searchText: String?) -> [[String:Any]]? {
     var finalResult = [[String:Any]]()
     let mysql = MySQL()
+    guard mysql.setOption(.MYSQL_SET_CHARSET_NAME, "utf8mb4") else {
+        return nil
+    }
     guard mysql.connect(host: host, user: user, password: password, db: database) else {
         return nil
     }
